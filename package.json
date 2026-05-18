@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@types/html2canvas": "^0.5.35",
+    "html2canvas": "^1.4.1",
+    "undici": "^7.2.3"
+  }
+}
