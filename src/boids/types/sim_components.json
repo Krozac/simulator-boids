@@ -1,0 +1,140 @@
+{
+    "entities": [
+        {
+            "id": "BoidEntity",
+            "filename": "ent_boid",
+            "description": "L'Entité qui représente un boid dans la simulation, composé de movement, comportement et de composents de rendu.",
+            "description_en": "Entity representing a boid in the simulation, composed of movement, behavior, and rendering components.",
+            "dependencies": [
+                "BoidComponent",
+                "PositionComponent",
+                "VelocityComponent",
+                "AccelerationComponent",
+                "DrawComponent"
+            ]
+        },
+        {
+            "id": "ObstacleEntity",
+            "filename": "ent_obstacle",
+            "description": "",
+            "description_en": "",
+            "dependencies": [
+                "ObstacleComponent",
+                "PositionComponent",
+                "DrawComponent"
+            ]
+        }
+    ],
+    "systems": [
+        {
+            "id": "BoidSystem",
+            "filename": "sys_boid",
+            "description": "Système gérant le comportement des boids, incluant les règles de séparation, alignement et cohésion.",
+            "description_en": "System responsible for boid behavior, applying separation, alignment, and cohesion rules.",
+            "dependencies": [
+                "BoidComponent",
+                "PositionComponent",
+                "VelocityComponent",
+                "AccelerationComponent",
+                "ObstacleComponent"
+            ]
+        },
+        {
+            "id": "MovementSystem",
+            "filename": "sys_movement",
+            "description": "Système responsable de la mise à jour des positions des entités en fonction de leur vélocité.",
+            "description_en": "System that updates entity positions based on their velocity.",
+            "dependencies": [
+                "PositionComponent",
+                "VelocityComponent"
+            ]
+        },
+        {
+            "id": "DrawSystem",
+            "filename": "sys_draw",
+            "description": "Système chargé de dessiner les entités à l'écran en utilisant leurs composants de position et de dessin.",
+            "description_en": "System that renders entities on screen using their position and drawing components.",
+            "dependencies": [
+                "PositionComponent",
+                "DrawComponent",
+                "VelocityComponent"
+            ]
+        }
+    ],
+    "components": [
+        {
+            "id": "BoidComponent",
+            "filename": "cmp_boid",
+            "description": "Composant représentant les propriétés spécifiques d'un boid.",
+            "description_en": "Component defining the specific behavioral properties of a boid.",
+            "dependencies": []
+        },
+        {
+            "id": "PositionComponent",
+            "filename": "cmp_position",
+            "description": "Composant stockant la position d'une entité dans l'espace.",
+            "description_en": "Component storing an entity's position in space.",
+            "dependencies": []
+        },
+        {
+            "id": "VelocityComponent",
+            "filename": "cmp_velocity",
+            "description": "Composant contenant la vélocité d'une entité, utilisée pour calculer les déplacements.",
+            "description_en": "Component holding an entity's velocity used to compute movement.",
+            "dependencies": []
+        },
+        {
+            "id": "AccelerationComponent",
+            "filename": "cmp_acceleration",
+            "description": "Composant définissant l'accélération d'une entité, influençant sa vélocité.",
+            "description_en": "",
+            "dependencies": []
+        },
+        {
+            "id": "DrawComponent",
+            "filename": "cmp_draw",
+            "description": "Composant utilisé pour dessiner une entité à l'écran.",
+            "description_en": "Component defining an entity's acceleration, influencing its velocity.",
+            "dependencies": []
+        },
+        {
+            "id": "ObstacleComponent",
+            "filename": "cmp_obstacle",
+            "description": "",
+            "description_en": "",
+            "dependencies": []
+        }
+    ],
+      "options": [
+        {
+            "id": "boid_count",
+            "type": "range",
+            "label": "Boid count",
+            "min": 10,
+            "max": 1000,
+            "step": 10,
+            "default": 500,
+            "locked":true
+        },
+        {
+            "id": "use_spatial_grid",
+            "type": "checkbox",
+            "label": "Use spatial grid (performance)",
+            "default": true,
+            "locked":true
+        },
+        {
+            "id": "obstacle_cursor",
+            "type": "checkbox",
+            "label": "Attach an obstacle to the cursor",
+            "default": false,
+            "locked":true
+        },{
+            "id": "show_fps",
+            "type" : "checkbox",
+            "label": "Show FPS",
+            "default": false,
+            "locked":true
+        }
+    ]
+}
