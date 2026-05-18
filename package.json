@@ -1,7 +1,13 @@
 {
+  "scripts": {
+    "build": "tsc",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
   "devDependencies": {
     "@types/node": "^22.10.7",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "gh-pages": "^6.1.1"
   },
   "dependencies": {
     "@types/html2canvas": "^0.5.35",
