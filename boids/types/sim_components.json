@@ -2,7 +2,7 @@
     "entities": [
         {
             "id": "BoidEntity",
-            "fileName": "ent_boid",
+            "filename": "ent_boid",
             "dependencies": [
                 "BoidComponent",
                 "PositionComponent",
@@ -15,7 +15,7 @@
     "systems": [
         {
             "id": "BoidSystem",
-            "fileName": "sys_boid",
+            "filename": "sys_boid",
             "description": "Système gérant le comportement des boids, incluant les règles de séparation, alignement et cohésion.",
             "dependencies": [
                 "BoidComponent",
@@ -26,7 +26,7 @@
         },
         {
             "id": "MovementSystem",
-            "fileName": "sys_movement",
+            "filename": "sys_movement",
             "description": "Système responsable de la mise à jour des positions des entités en fonction de leur vélocité.",
             "dependencies": [
                 "PositionComponent",
@@ -35,7 +35,7 @@
         },
         {
             "id": "DrawSystem",
-            "fileName": "sys_draw",
+            "filename": "sys_draw",
             "description": "Système chargé de dessiner les entités à l'écran en utilisant leurs composants de position et de dessin.",
             "dependencies": [
                 "PositionComponent",
@@ -47,31 +47,31 @@
     "components": [
         {
             "id": "BoidComponent",
-            "fileName": "cmp_boid",
+            "filename": "cmp_boid",
             "description": "Composant représentant les propriétés spécifiques d'un boid.",
             "dependencies": []
         },
         {
             "id": "PositionComponent",
-            "fileName": "cmp_position",
+            "filename": "cmp_position",
             "description": "Composant stockant la position d'une entité dans l'espace.",
             "dependencies": []
         },
         {
             "id": "VelocityComponent",
-            "fileName": "cmp_velocity",
+            "filename": "cmp_velocity",
             "description": "Composant contenant la vélocité d'une entité, utilisée pour calculer les déplacements.",
             "dependencies": []
         },
         {
             "id": "AccelerationComponent",
-            "fileName": "cmp_acceleration",
+            "filename": "cmp_acceleration",
             "description": "Composant définissant l'accélération d'une entité, influençant sa vélocité.",
             "dependencies": []
         },
         {
             "id": "DrawComponent",
-            "fileName": "cmp_draw",
+            "filename": "cmp_draw",
             "description": "Composant utilisé pour dessiner une entité à l'écran.",
             "dependencies": []
         }
