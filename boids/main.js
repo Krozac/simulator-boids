@@ -30,13 +30,7 @@ function applyLetterbox(ctx, canvas) {
     const scale = Math.min(canvas.width / WORLD_WIDTH, canvas.height / WORLD_HEIGHT);
     const offsetX = (canvas.width - WORLD_WIDTH * scale) / 2;
     const offsetY = (canvas.height - WORLD_HEIGHT * scale) / 2;
-    // reset transform first
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    // ⭐ clip to world viewport (THE IMPORTANT PART)
-    ctx.beginPath();
-    ctx.rect(offsetX, offsetY, WORLD_WIDTH * scale, WORLD_HEIGHT * scale);
-    ctx.clip();
-    // apply world transform
     ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
 }
 function init(context, options = {}) {
