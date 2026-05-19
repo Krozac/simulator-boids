@@ -104,7 +104,7 @@ Using ECS allows:
 # Demo
 
 Live version:
-https://theoguenezan.fr/simulator-boids/
+https://theoguenezan.fr/simulator-app/
 
 ---
 
