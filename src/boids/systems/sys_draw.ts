@@ -12,19 +12,24 @@ export class DrawSystem {
     update(entityManager: EntityManager) {
         const entities = entityManager.getEntities();
 
-        this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
-        entities.forEach((components, entityId) => {
+        for (const [entityId, components] of entities) {
             const position = components.get('Position') as ReturnType<typeof PositionComponent>;
+            if (!position) continue;
             const draw = components.get('Draw') as ReturnType<typeof DrawComponent>;
+            if (!draw) continue;
             const velocity = components.get('Velocity') as ReturnType<typeof PositionComponent>;
 
             if (position && draw) {
                 this.context.fillStyle = draw.color;
-                this.context.beginPath();
+
                 if (draw.shape === 'circle') {
+                    this.context.beginPath();
                     this.context.arc(position.x, position.y, draw.size, 0, Math.PI * 2);
+                    this.context.fill();
                 } else if (draw.shape === 'square') {
+                    this.context.beginPath();
                     this.context.rect(position.x - draw.size / 2, position.y - draw.size / 2, draw.size, draw.size);
+                    this.context.fill();
                 } else if (draw.shape === 'triangle') {
                     let angle = 0;
                     if (velocity) angle = Math.atan2(velocity.y, velocity.x);
@@ -46,8 +51,8 @@ export class DrawSystem {
                     this.context.fill();
                     this.context.restore();
                 }
-                this.context.fill();
+ 
             }
-        });
+        };
     }
 }
