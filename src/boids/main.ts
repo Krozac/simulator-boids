@@ -50,137 +50,127 @@ function applyLetterbox(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement
     ctx.setTransform(scale, 0, 0, scale, offsetX, offsetY);
 }
 
-function init(context : CanvasRenderingContext2D, options : any = {}) {
-    ctx = context;
-    canvas = context.canvas;
+export function createSim(context : CanvasRenderingContext2D, options : any = {}) {
 
-    console.log(options)
+    function init() {
+        ctx = context;
+        canvas = context.canvas;
 
-    entityManager = new EntityManager();
-    boidSystem = new BoidSystem(entityManager, options.use_spatial_grid ?? false);
-    movementSystem = new MovementSystem();
-    drawSystem = new DrawSystem(context);
-    cursorSystem = new CursorSystem();
+        console.log(options)
 
-    resizeCanvas(canvas);
-    resizeHandler = () => resizeCanvas(canvas);
-    window.addEventListener('resize', () => resizeHandler);
+        entityManager = new EntityManager();
+        boidSystem = new BoidSystem(entityManager, options.use_spatial_grid ?? false);
+        movementSystem = new MovementSystem();
+        drawSystem = new DrawSystem(context);
+        cursorSystem = new CursorSystem();
 
-    running = true;
-    
-    boidSystem.canvasWidth = WORLD_WIDTH;
-    boidSystem.canvasHeight = WORLD_HEIGHT;
+        resizeCanvas(canvas);
+        resizeHandler = () => resizeCanvas(canvas);
+        window.addEventListener('resize', resizeHandler);
 
-    for (let i = 0; i < options.boid_count; i++) {
-        const boidEntity = new BoidEntity(entityManager, Math.random() * WORLD_WIDTH, Math.random() * WORLD_HEIGHT);
+        running = true;
+        
+        boidSystem.canvasWidth = WORLD_WIDTH;
+        boidSystem.canvasHeight = WORLD_HEIGHT;
+
+        for (let i = 0; i < options.boid_count; i++) {
+            const boidEntity = new BoidEntity(entityManager, Math.random() * WORLD_WIDTH, Math.random() * WORLD_HEIGHT);
+        }
+
+        canvas.addEventListener("mousemove", (e) => {
+            const rect = canvas.getBoundingClientRect();
+
+            const screenX = e.clientX - rect.left;
+            const screenY = e.clientY - rect.top;
+
+            const scale = Math.min(
+                canvas.width / WORLD_WIDTH,
+                canvas.height / WORLD_HEIGHT
+            );
+
+            const offsetX = (canvas.width - WORLD_WIDTH * scale) / 2;
+            const offsetY = (canvas.height - WORLD_HEIGHT * scale) / 2;
+
+            // ⭐ convert to world space
+            InputState.mouseX = (screenX - offsetX) / scale;
+            InputState.mouseY = (screenY - offsetY) / scale;
+        });
+
+        if (options.obstacle_cursor){
+            let obstacle_cursor = new ObstacleEntity(entityManager, 0, 0, 50);
+            entityManager.addComponent(obstacle_cursor.entityId,"Cursor",CursorTag())
+        }
+
+        
+        if (options.show_fps) {
+            fpsEl = document.createElement("p");
+            fpsEl.style.position = "absolute";
+            fpsEl.style.top = "8px";
+            fpsEl.style.left = "8px";
+            fpsEl.style.margin = "0";
+            fpsEl.style.padding = "4px 6px";
+            fpsEl.style.background = "rgba(0,0,0,0.5)";
+            fpsEl.style.color = "#0f0";
+            fpsEl.style.fontFamily = "monospace";
+            fpsEl.style.fontSize = "12px";
+            fpsEl.style.pointerEvents = "none";
+            fpsEl.textContent = "FPS: --";
+            fpsEl.style.zIndex = "100";
+
+            canvas.parentElement?.appendChild(fpsEl);
+        }
     }
 
-    canvas.addEventListener("mousemove", (e) => {
-        const rect = canvas.getBoundingClientRect();
 
-        const screenX = e.clientX - rect.left;
-        const screenY = e.clientY - rect.top;
 
-        const scale = Math.min(
-            canvas.width / WORLD_WIDTH,
-            canvas.height / WORLD_HEIGHT
-        );
+    function start() {
+        if (!running) return;
 
-        const offsetX = (canvas.width - WORLD_WIDTH * scale) / 2;
-        const offsetY = (canvas.height - WORLD_HEIGHT * scale) / 2;
+        GameLoop.start({
+            targetFps: 60,
 
-        // ⭐ convert to world space
-        InputState.mouseX = (screenX - offsetX) / scale;
-        InputState.mouseY = (screenY - offsetY) / scale;
-    });
+            onUpdate: (dt) => {
+                
+                if (fpsEl) {
+                    fpsEl.textContent = `FPS: ${GameLoop.getFps()}`;
+                }
+                boidSystem.update(dt);
+                movementSystem.update(entityManager, WORLD_WIDTH, WORLD_HEIGHT, dt);
+                cursorSystem.update(entityManager);
+            },
 
-    if (options.obstacle_cursor){
-        let obstacle_cursor = new ObstacleEntity(entityManager, 0, 0, 50);
-        entityManager.addComponent(obstacle_cursor.entityId,"Cursor",CursorTag())
+            onRender: () => {
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                applyLetterbox(ctx, canvas);
+                drawSystem.update(entityManager);
+            },
+        });
     }
 
-    
-    if (options.show_fps) {
-        fpsEl = document.createElement("p");
-        fpsEl.style.position = "absolute";
-        fpsEl.style.top = "8px";
-        fpsEl.style.left = "8px";
-        fpsEl.style.margin = "0";
-        fpsEl.style.padding = "4px 6px";
-        fpsEl.style.background = "rgba(0,0,0,0.5)";
-        fpsEl.style.color = "#0f0";
-        fpsEl.style.fontFamily = "monospace";
-        fpsEl.style.fontSize = "12px";
-        fpsEl.style.pointerEvents = "none";
-        fpsEl.textContent = "FPS: --";
-        fpsEl.style.zIndex = "100";
+    function stop() {
+        running = false;
 
-        canvas.parentElement?.appendChild(fpsEl);
-    }
-}
+        // stop the fixed game loop
+        GameLoop.stop();
 
+        // remove resize listener
+        if (resizeHandler) {
+            window.removeEventListener('resize', resizeHandler);
+            resizeHandler = null;
+        }
 
-
-function gameLoop() {
-    if (!running) return;
-
-    GameLoop.start({
-        targetFps: 60,
-
-        onUpdate: (dt) => {
-            
-            if (fpsEl) {
-                fpsEl.textContent = `FPS: ${GameLoop.getFps()}`;
-            }
-            boidSystem.update(dt);
-            movementSystem.update(entityManager, WORLD_WIDTH, WORLD_HEIGHT, dt);
-            cursorSystem.update(entityManager);
-        },
-
-        onRender: () => {
+        // optional: clear canvas
+        if (ctx && canvas) {
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
 
-            applyLetterbox(ctx, canvas);
-            drawSystem.update(entityManager);
-        },
-    });
+        if (fpsEl) {
+            fpsEl.remove();
+            fpsEl = null;
+        }
+    }
+    return { init, start, stop };
 }
-
-function stop() {
-    running = false;
-
-    // stop the fixed game loop
-    GameLoop.stop();
-
-    // remove resize listener
-    if (resizeHandler) {
-        window.removeEventListener('resize', resizeHandler);
-        resizeHandler = null;
-    }
-
-    // optional: clear canvas
-    if (ctx && canvas) {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    if (fpsEl) {
-        fpsEl.remove();
-        fpsEl = null;
-    }
-}
-
-declare global {
-    interface Window {
-        init?: typeof init;
-        gameLoop?: typeof gameLoop;
-        stopSim?: typeof stop;
-    }
-}
-
-window.init = init;
-window.gameLoop = gameLoop;
-window.stopSim = stop;
-
-export { init, gameLoop, stop  };

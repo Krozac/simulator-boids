@@ -34,22 +34,26 @@ export class DrawSystem {
                     let angle = 0;
                     if (velocity) angle = Math.atan2(velocity.y, velocity.x);
 
-                    this.context.save();
-                    this.context.translate(position.x, position.y);
-                    this.context.rotate(angle);
-
-                    this.context.beginPath();
-
-                    // forward = +X direction
                     const size = draw.size;
 
-                    this.context.moveTo(size, 0);          // nose (forward)
-                    this.context.lineTo(-size, size * 0.6); // back bottom
-                    this.context.lineTo(-size, -size * 0.6); // back top
-                    this.context.closePath();
+                    const cos = Math.cos(angle);
+                    const sin = Math.sin(angle);
 
+                    const x1 = position.x + cos * size;
+                    const y1 = position.y + sin * size;
+
+                    const x2 = position.x + cos * (-size) - sin * (size * 0.6);
+                    const y2 = position.y + sin * (-size) + cos * (size * 0.6);
+
+                    const x3 = position.x + cos * (-size) - sin * (-size * 0.6);
+                    const y3 = position.y + sin * (-size) + cos * (-size * 0.6);
+
+                    this.context.beginPath();
+                    this.context.moveTo(x1, y1);
+                    this.context.lineTo(x2, y2);
+                    this.context.lineTo(x3, y3);
+                    this.context.closePath();
                     this.context.fill();
-                    this.context.restore();
                 }
  
             }
