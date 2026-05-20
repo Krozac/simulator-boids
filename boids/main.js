@@ -45,7 +45,7 @@ function init(context, options = {}) {
     cursorSystem = new CursorSystem();
     resizeCanvas(canvas);
     resizeHandler = () => resizeCanvas(canvas);
-    window.addEventListener('resize', () => resizeHandler);
+    window.addEventListener('resize', resizeHandler);
     running = true;
     boidSystem.canvasWidth = WORLD_WIDTH;
     boidSystem.canvasHeight = WORLD_HEIGHT;
